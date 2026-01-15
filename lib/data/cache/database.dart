@@ -1,8 +1,5 @@
-import 'dart:io';
 import 'package:drift/drift.dart';
-import 'package:drift/native.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
+import 'database_stub.dart' if (dart.library.io) 'database_native.dart';
 
 part 'database.g.dart';
 
@@ -63,7 +60,7 @@ class SearchHistory extends Table {
 
 @DriftDatabase(tables: [Tickets, Wishlist, Conversations, SearchHistory])
 class AppDatabase extends _$AppDatabase {
-  AppDatabase() : super(_openConnection());
+  AppDatabase() : super(createDatabaseConnection());
 
   @override
   int get schemaVersion => 1;
@@ -81,10 +78,3 @@ class AppDatabase extends _$AppDatabase {
   }
 }
 
-LazyDatabase _openConnection() {
-  return LazyDatabase(() async {
-    final dbFolder = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dbFolder.path, 'hoppr.db'));
-    return NativeDatabase(file);
-  });
-}
