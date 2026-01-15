@@ -1,5 +1,5 @@
 import 'package:drift/drift.dart';
-import 'database_stub.dart' if (dart.library.io) 'database_native.dart';
+import 'database_stub.dart' if (dart.library.io) 'database_native.dart' as db_impl;
 
 part 'database.g.dart';
 
@@ -60,7 +60,7 @@ class SearchHistory extends Table {
 
 @DriftDatabase(tables: [Tickets, Wishlist, Conversations, SearchHistory])
 class AppDatabase extends _$AppDatabase {
-  AppDatabase() : super(createDatabaseConnection());
+  AppDatabase() : super(db_impl.createDatabaseConnection());
 
   @override
   int get schemaVersion => 1;
