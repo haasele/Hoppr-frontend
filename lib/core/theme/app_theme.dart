@@ -37,7 +37,7 @@ class AppTheme {
   });
 
   ThemeData get lightTheme {
-    final colorScheme = ColorScheme.light(
+    final colorScheme = const ColorScheme.light(
       primary: LightColorTokens.primary,
       onPrimary: LightColorTokens.onPrimary,
       primaryContainer: LightColorTokens.primaryContainer,
@@ -56,12 +56,10 @@ class AppTheme {
       onErrorContainer: LightColorTokens.onErrorContainer,
       surface: LightColorTokens.surface,
       onSurface: LightColorTokens.onSurface,
-      surfaceVariant: LightColorTokens.surfaceVariant,
+      surfaceContainerHighest: LightColorTokens.surfaceVariant,
       onSurfaceVariant: LightColorTokens.onSurfaceVariant,
       outline: LightColorTokens.outline,
       outlineVariant: LightColorTokens.outlineVariant,
-      background: LightColorTokens.background,
-      onBackground: LightColorTokens.onBackground,
       inverseSurface: LightColorTokens.inverseSurface,
       onInverseSurface: LightColorTokens.onInverseSurface,
       inversePrimary: LightColorTokens.inversePrimary,
@@ -73,32 +71,40 @@ class AppTheme {
       useMaterial3: true,
       colorScheme: colorScheme,
       textTheme: AppTextTheme.lightTextTheme(colorScheme),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         shape: AppShapeTokens.cardShape,
         elevation: 1,
         margin: const EdgeInsets.all(8),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          shape: AppShapeTokens.buttonShape,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppShapeTokens.extraLarge),
+          ),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           elevation: 1,
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          shape: AppShapeTokens.buttonShape,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppShapeTokens.extraLarge),
+          ),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          shape: AppShapeTokens.buttonShape,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppShapeTokens.extraLarge),
+          ),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         ),
       ),
       chipTheme: ChipThemeData(
-        shape: AppShapeTokens.chipShape,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppShapeTokens.extraLarge),
+        ),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -106,21 +112,19 @@ class AppTheme {
           borderRadius: BorderRadius.circular(AppShapeTokens.medium),
         ),
         filled: true,
-        fillColor: colorScheme.surfaceVariant.withOpacity(0.3),
+        fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
       ),
       bottomSheetTheme: BottomSheetThemeData(
         shape: AppShapeTokens.bottomSheetShape,
       ),
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         shape: AppShapeTokens.dialogShape,
       ),
       appBarTheme: AppBarTheme(
-        elevation: 0,
         centerTitle: false,
         shape: Border(
           bottom: BorderSide(
             color: colorScheme.outlineVariant,
-            width: 1,
           ),
         ),
       ),
@@ -128,7 +132,7 @@ class AppTheme {
   }
 
   ThemeData get darkTheme {
-    final colorScheme = ColorScheme.dark(
+    final colorScheme = const ColorScheme.dark(
       primary: DarkColorTokens.primary,
       onPrimary: DarkColorTokens.onPrimary,
       primaryContainer: DarkColorTokens.primaryContainer,
@@ -147,12 +151,10 @@ class AppTheme {
       onErrorContainer: DarkColorTokens.onErrorContainer,
       surface: DarkColorTokens.surface,
       onSurface: DarkColorTokens.onSurface,
-      surfaceVariant: DarkColorTokens.surfaceVariant,
+      surfaceContainerHighest: DarkColorTokens.surfaceVariant,
       onSurfaceVariant: DarkColorTokens.onSurfaceVariant,
       outline: DarkColorTokens.outline,
       outlineVariant: DarkColorTokens.outlineVariant,
-      background: DarkColorTokens.background,
-      onBackground: DarkColorTokens.onBackground,
       inverseSurface: DarkColorTokens.inverseSurface,
       onInverseSurface: DarkColorTokens.onInverseSurface,
       inversePrimary: DarkColorTokens.inversePrimary,
@@ -164,33 +166,41 @@ class AppTheme {
       useMaterial3: true,
       colorScheme: colorScheme,
       textTheme: AppTextTheme.darkTextTheme(colorScheme),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         shape: AppShapeTokens.cardShape,
         elevation: 0,
         margin: const EdgeInsets.all(8),
-        color: colorScheme.surfaceVariant,
+        color: colorScheme.surfaceContainerHighest,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          shape: AppShapeTokens.buttonShape,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppShapeTokens.extraLarge),
+          ),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           elevation: 1,
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          shape: AppShapeTokens.buttonShape,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppShapeTokens.extraLarge),
+          ),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          shape: AppShapeTokens.buttonShape,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppShapeTokens.extraLarge),
+          ),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         ),
       ),
       chipTheme: ChipThemeData(
-        shape: AppShapeTokens.chipShape,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppShapeTokens.extraLarge),
+        ),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -198,21 +208,19 @@ class AppTheme {
           borderRadius: BorderRadius.circular(AppShapeTokens.medium),
         ),
         filled: true,
-        fillColor: colorScheme.surfaceVariant.withOpacity(0.3),
+        fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
       ),
       bottomSheetTheme: BottomSheetThemeData(
         shape: AppShapeTokens.bottomSheetShape,
       ),
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         shape: AppShapeTokens.dialogShape,
       ),
       appBarTheme: AppBarTheme(
-        elevation: 0,
         centerTitle: false,
         shape: Border(
           bottom: BorderSide(
             color: colorScheme.outlineVariant,
-            width: 1,
           ),
         ),
       ),

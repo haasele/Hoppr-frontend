@@ -1,6 +1,8 @@
 import 'package:drift/drift.dart';
 import 'package:hoppr_frontend/data/cache/database.dart';
 
+part 'ticket_dao.g.dart';
+
 @DriftAccessor(tables: [Tickets])
 class TicketDao extends DatabaseAccessor<AppDatabase> with _$TicketDaoMixin {
   TicketDao(AppDatabase db) : super(db);
@@ -19,10 +21,10 @@ class TicketDao extends DatabaseAccessor<AppDatabase> with _$TicketDaoMixin {
   }
 
   /// Insert or update multiple tickets
-  Future<void> upsertTickets(List<TicketsCompanion> ticketList) {
-    return batch((batch) {
+  Future<void> upsertTickets(List<TicketsCompanion> ticketList) async {
+    await batch((batch) {
       for (final ticket in ticketList) {
-        batch.insertOnConflictUpdate(tickets, ticket);
+        batch.insert(tickets, ticket, mode: InsertMode.insertOrReplace);
       }
     });
   }

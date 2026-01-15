@@ -10,7 +10,6 @@ class AuthService {
   // Keycloak configuration - should be configurable
   static const String _clientId = 'hoppr-frontend';
   static const String _redirectUrl = 'com.hoppr.app://callback';
-  static const String _issuer = 'http://localhost:8080/realms/ticket-platform';
   static const String _discoveryUrl =
       'http://localhost:8080/realms/ticket-platform/.well-known/openid-configuration';
 
@@ -18,14 +17,10 @@ class AuthService {
   Future<AuthResult?> login() async {
     try {
       final result = await _appAuth.authorizeAndExchangeCode(
-        AuthorizationServiceConfiguration(
-          authorizationEndpoint:
-              '$_issuer/protocol/openid-connect/auth',
-          tokenEndpoint: '$_issuer/protocol/openid-connect/token',
-        ),
-        AuthorizationRequest(
+        AuthorizationTokenRequest(
           _clientId,
           _redirectUrl,
+          discoveryUrl: _discoveryUrl,
         ),
       );
 
@@ -78,11 +73,7 @@ class AuthService {
           _clientId,
           _redirectUrl,
           refreshToken: refreshToken,
-        ),
-        AuthorizationServiceConfiguration(
-          authorizationEndpoint:
-              '$_issuer/protocol/openid-connect/auth',
-          tokenEndpoint: '$_issuer/protocol/openid-connect/token',
+          discoveryUrl: _discoveryUrl,
         ),
       );
 

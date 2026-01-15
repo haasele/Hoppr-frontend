@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:hoppr_frontend/core/router/routes.dart';
 import 'package:hoppr_frontend/core/theme/shape_tokens.dart';
 import 'package:hoppr_frontend/features/tickets/domain/ticket.dart';
 

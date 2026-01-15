@@ -14,6 +14,14 @@ class TicketDto with _$TicketDto {
     @JsonKey(name: 'expires_at') required String expiresAt,
     @JsonKey(name: 'created_at') required String createdAt,
     @JsonKey(name: 'updated_at') required String updatedAt,
+    // Extended fields
+    String? title,
+    String? description,
+    String? type,
+    String? provider,
+    String? location,
+    List<String>? zones,
+    @JsonKey(name: 'image_urls') List<String>? imageUrls,
   }) = _TicketDto;
 
   factory TicketDto.fromJson(Map<String, dynamic> json) =>

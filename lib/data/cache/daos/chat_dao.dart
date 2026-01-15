@@ -1,6 +1,8 @@
 import 'package:drift/drift.dart';
 import 'package:hoppr_frontend/data/cache/database.dart';
 
+part 'chat_dao.g.dart';
+
 @DriftAccessor(tables: [Conversations])
 class ChatDao extends DatabaseAccessor<AppDatabase> with _$ChatDaoMixin {
   ChatDao(AppDatabase db) : super(db);
@@ -20,16 +22,16 @@ class ChatDao extends DatabaseAccessor<AppDatabase> with _$ChatDaoMixin {
   }
 
   /// Insert or update multiple conversations
-  Future<void> upsertAll(List<ConversationsCompanion> conversationList) {
-    return batch((batch) {
+  Future<void> upsertAll(List<ConversationsCompanion> conversationList) async {
+    await batch((batch) {
       for (final conversation in conversationList) {
-        batch.insertOnConflictUpdate(conversations, conversation);
+        batch.insert(conversations, conversation, mode: InsertMode.insertOrReplace);
       }
     });
   }
 
   /// Delete conversation
-  Future<void> delete(String id) {
+  Future<void> deleteConversation(String id) {
     return (delete(conversations)..where((c) => c.id.equals(id))).go();
   }
 

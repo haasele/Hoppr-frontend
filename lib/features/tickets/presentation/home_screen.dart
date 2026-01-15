@@ -41,7 +41,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final ticketsAsync = ref.watch(homeTicketsProvider);
 
     return Scaffold(

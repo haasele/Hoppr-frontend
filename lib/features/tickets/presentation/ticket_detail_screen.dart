@@ -4,13 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:hoppr_frontend/core/router/routes.dart';
 import 'package:hoppr_frontend/core/theme/shape_tokens.dart';
 import 'package:hoppr_frontend/features/auth/presentation/feature_gate.dart';
 import 'package:hoppr_frontend/features/tickets/data/ticket_repository.dart';
 import 'package:hoppr_frontend/features/tickets/domain/ticket.dart';
 import 'package:hoppr_frontend/shared/widgets/empty_state.dart';
-import 'package:hoppr_frontend/shared/widgets/skeleton_loader.dart';
 
 /// Ticket detail provider
 final ticketDetailProvider = FutureProvider.family<Ticket?, String>((ref, id) {
@@ -28,7 +26,6 @@ class TicketDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
     final ticketAsync = ref.watch(ticketDetailProvider(ticketId));
 
     return Scaffold(

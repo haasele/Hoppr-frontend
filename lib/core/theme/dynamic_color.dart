@@ -7,9 +7,6 @@ class DynamicColorHelper {
   static Future<ColorScheme?> generateColorScheme(
     BuildContext context,
   ) async {
-    // Check if dynamic colors are supported
-    final brightness = MediaQuery.of(context).platformBrightness;
-    
     // For now, return null (static colors will be used)
     // In the future, this can integrate with Material You APIs
     // when available on the platform

@@ -106,7 +106,6 @@ class _LoadingIndicatorPainter extends CustomPainter {
   ) {
     final path = Path();
     final angleStep = 2 * math.pi / sides;
-    final cornerRadius = radius * 0.2;
 
     for (int i = 0; i < sides; i++) {
       final angle = rotation + i * angleStep - math.pi / 2;

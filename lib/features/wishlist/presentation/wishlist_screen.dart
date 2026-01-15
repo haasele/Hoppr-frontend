@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:go_router/go_router.dart';
-import 'package:hoppr_frontend/core/router/routes.dart';
 import 'package:hoppr_frontend/core/theme/shape_tokens.dart';
 import 'package:hoppr_frontend/features/auth/data/auth_provider.dart';
-import 'package:hoppr_frontend/features/tickets/data/ticket_repository.dart';
 import 'package:hoppr_frontend/features/tickets/domain/ticket.dart';
 import 'package:hoppr_frontend/shared/widgets/empty_state.dart';
 import 'package:hoppr_frontend/shared/widgets/skeleton_loader.dart';
@@ -13,7 +10,6 @@ import 'package:hoppr_frontend/shared/widgets/ticket_card.dart';
 
 /// Wishlist provider
 final wishlistProvider = FutureProvider<List<Ticket>>((ref) {
-  final repository = ref.watch(ticketRepositoryProvider);
   // TODO: Implement wishlist repository method
   // For now, return empty list
   return Future.value(<Ticket>[]);

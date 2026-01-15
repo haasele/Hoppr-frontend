@@ -1,68 +1,128 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:retrofit/retrofit.dart';
 import 'package:hoppr_frontend/core/constants/api_constants.dart';
+import 'package:hoppr_frontend/data/api/api_client.dart';
 import 'package:hoppr_frontend/data/api/models/chat_dto.dart';
 import 'package:hoppr_frontend/data/api/models/ticket_dto.dart';
 import 'package:hoppr_frontend/data/api/models/user_dto.dart';
 
-part 'api_service.g.dart';
-
-@RestApi()
+// TODO: Re-enable retrofit generation once package compatibility is fixed
+// For now, using manual implementation
 abstract class ApiService {
-  factory ApiService(Dio dio, {String baseUrl}) = _ApiService;
+  final Dio _dio;
+  final String _baseUrl;
+
+  ApiService(this._dio, {String? baseUrl}) : _baseUrl = baseUrl ?? ApiConstants.baseUrl;
 
   // Tickets
-  @GET(ApiConstants.tickets)
   Future<List<TicketDto>> getTickets({
-    @Query('limit') int? limit,
-    @Query('offset') int? offset,
-    @Query('search') String? search,
-    @Query('type') String? type,
-    @Query('provider') String? provider,
-    @Query('location') String? location,
-  });
+    int? limit,
+    int? offset,
+    String? search,
+    String? type,
+    String? provider,
+    String? location,
+  }) async {
+    final queryParams = <String, dynamic>{};
+    if (limit != null) queryParams['limit'] = limit;
+    if (offset != null) queryParams['offset'] = offset;
+    if (search != null) queryParams['search'] = search;
+    if (type != null) queryParams['type'] = type;
+    if (provider != null) queryParams['provider'] = provider;
+    if (location != null) queryParams['location'] = location;
 
-  @GET('${ApiConstants.ticketDetail}/{id}')
-  Future<TicketDto> getTicket(@Path('id') String id);
+    final response = await _dio.get(
+      '$_baseUrl${ApiConstants.tickets}',
+      queryParameters: queryParams,
+    );
+    return (response.data as List)
+        .map((json) => TicketDto.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
 
-  @POST(ApiConstants.tickets)
+  Future<TicketDto> getTicket(String id) async {
+    final response = await _dio.get('$_baseUrl${ApiConstants.ticketDetail}/$id');
+    return TicketDto.fromJson(response.data as Map<String, dynamic>);
+  }
+
   Future<CreateTicketResponse> createTicket(
-    @Body() CreateTicketRequest request,
-    @Header(ApiConstants.idempotencyKeyHeader) String idempotencyKey,
-  );
+    CreateTicketRequest request,
+    String idempotencyKey,
+  ) async {
+    final response = await _dio.post(
+      '$_baseUrl${ApiConstants.tickets}',
+      data: request.toJson(),
+      options: Options(
+        headers: {ApiConstants.idempotencyKeyHeader: idempotencyKey},
+      ),
+    );
+    return CreateTicketResponse.fromJson(response.data as Map<String, dynamic>);
+  }
 
-  @POST('${ApiConstants.ticketDetail}/{id}/confirm')
   Future<TicketDto> confirmUpload(
-    @Path('id') String id,
-    @Body() ConfirmUploadRequest request,
-    @Header(ApiConstants.idempotencyKeyHeader) String idempotencyKey,
-  );
+    String id,
+    ConfirmUploadRequest request,
+    String idempotencyKey,
+  ) async {
+    final response = await _dio.post(
+      '$_baseUrl${ApiConstants.ticketDetail}/$id/confirm',
+      data: request.toJson(),
+      options: Options(
+        headers: {ApiConstants.idempotencyKeyHeader: idempotencyKey},
+      ),
+    );
+    return TicketDto.fromJson(response.data as Map<String, dynamic>);
+  }
 
   // Users
-  @GET('${ApiConstants.users}/{id}')
-  Future<UserDto> getUser(@Path('id') String id);
+  Future<UserDto> getUser(String id) async {
+    final response = await _dio.get('$_baseUrl${ApiConstants.users}/$id');
+    return UserDto.fromJson(response.data as Map<String, dynamic>);
+  }
 
   // Conversations
-  @GET(ApiConstants.conversations)
-  Future<List<ConversationDto>> getConversations();
+  Future<List<ConversationDto>> getConversations() async {
+    final response = await _dio.get('$_baseUrl${ApiConstants.conversations}');
+    return (response.data as List)
+        .map((json) => ConversationDto.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
 
-  @GET('${ApiConstants.conversations}/{id}/messages')
-  Future<List<MessageDto>> getMessages(@Path('id') String conversationId);
+  Future<List<MessageDto>> getMessages(String conversationId) async {
+    final response = await _dio.get(
+      '$_baseUrl${ApiConstants.conversations}/$conversationId/messages',
+    );
+    return (response.data as List)
+        .map((json) => MessageDto.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
 
   // Wishlist
-  @GET(ApiConstants.wishlist)
-  Future<List<TicketDto>> getWishlist();
+  Future<List<TicketDto>> getWishlist() async {
+    final response = await _dio.get('$_baseUrl${ApiConstants.wishlist}');
+    return (response.data as List)
+        .map((json) => TicketDto.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
 
-  @POST(ApiConstants.wishlist)
-  Future<void> addToWishlist(@Body() Map<String, String> request);
+  Future<void> addToWishlist(Map<String, String> request) async {
+    await _dio.post(
+      '$_baseUrl${ApiConstants.wishlist}',
+      data: request,
+    );
+  }
 
-  @DELETE('${ApiConstants.wishlist}/{id}')
-  Future<void> removeFromWishlist(@Path('id') String ticketId);
+  Future<void> removeFromWishlist(String ticketId) async {
+    await _dio.delete('$_baseUrl${ApiConstants.wishlist}/$ticketId');
+  }
 }
 
 /// API service provider
 final apiServiceProvider = Provider<ApiService>((ref) {
   final dio = ref.watch(apiClientProvider);
-  return ApiService(dio);
+  return _ApiServiceImpl(dio);
 });
+
+class _ApiServiceImpl extends ApiService {
+  _ApiServiceImpl(super.dio) : super();
+}

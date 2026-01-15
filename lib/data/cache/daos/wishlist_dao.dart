@@ -1,12 +1,14 @@
 import 'package:drift/drift.dart';
 import 'package:hoppr_frontend/data/cache/database.dart';
 
+part 'wishlist_dao.g.dart';
+
 @DriftAccessor(tables: [Wishlist])
 class WishlistDao extends DatabaseAccessor<AppDatabase> with _$WishlistDaoMixin {
   WishlistDao(AppDatabase db) : super(db);
 
   /// Get all wishlist items
-  Future<List<WishlistItem>> getAll() => select(wishlist).get();
+  Future<List<WishlistData>> getAll() => select(wishlist).get();
 
   /// Check if ticket is in wishlist
   Future<bool> isInWishlist(String ticketId) async {

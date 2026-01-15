@@ -1,13 +1,15 @@
 import 'package:drift/drift.dart';
 import 'package:hoppr_frontend/data/cache/database.dart';
 
+part 'search_history_dao.g.dart';
+
 @DriftAccessor(tables: [SearchHistory])
 class SearchHistoryDao extends DatabaseAccessor<AppDatabase>
     with _$SearchHistoryDaoMixin {
   SearchHistoryDao(AppDatabase db) : super(db);
 
   /// Get recent searches (limit to last 10)
-  Future<List<SearchHistoryItem>> getRecent({int limit = 10}) {
+  Future<List<SearchHistoryData>> getRecent({int limit = 10}) {
     return (select(searchHistory)
           ..orderBy([(s) => OrderingTerm.desc(s.timestamp)])
           ..limit(limit))
@@ -28,7 +30,7 @@ class SearchHistoryDao extends DatabaseAccessor<AppDatabase>
   Future<void> clearAll() => delete(searchHistory).go();
 
   /// Delete specific search
-  Future<void> delete(int id) {
+  Future<void> deleteSearch(int id) {
     return (delete(searchHistory)..where((s) => s.id.equals(id))).go();
   }
 }

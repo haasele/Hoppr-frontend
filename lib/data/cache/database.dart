@@ -3,10 +3,6 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
-import 'package:hoppr_frontend/data/cache/daos/ticket_dao.dart';
-import 'package:hoppr_frontend/data/cache/daos/wishlist_dao.dart';
-import 'package:hoppr_frontend/data/cache/daos/chat_dao.dart';
-import 'package:hoppr_frontend/data/cache/daos/search_history_dao.dart';
 
 part 'database.g.dart';
 
@@ -21,6 +17,14 @@ class Tickets extends Table {
   TextColumn get createdAt => text().named('created_at')();
   TextColumn get updatedAt => text().named('updated_at')();
   TextColumn get cachedAt => text().named('cached_at')();
+  // Extended fields
+  TextColumn get title => text().nullable()();
+  TextColumn get description => text().nullable()();
+  TextColumn get type => text().nullable()();
+  TextColumn get provider => text().nullable()();
+  TextColumn get location => text().nullable()();
+  TextColumn get zones => text().nullable()(); // Store as JSON string
+  TextColumn get imageUrls => text().nullable()(); // Store as JSON string
 
   @override
   Set<Column> get primaryKey => {id};
@@ -54,12 +58,10 @@ class SearchHistory extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get query => text()();
   TextColumn get timestamp => text()();
-
-  @override
-  Set<Column> get primaryKey => {id};
+  // Note: autoIncrement() already creates a primary key, so we don't override primaryKey
 }
 
-@DriftDatabase(tables: [Tickets, Wishlist, Conversations, SearchHistory], daos: [TicketDao, WishlistDao, ChatDao, SearchHistoryDao])
+@DriftDatabase(tables: [Tickets, Wishlist, Conversations, SearchHistory])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 

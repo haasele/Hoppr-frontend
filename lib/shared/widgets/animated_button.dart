@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:hoppr_frontend/core/theme/shape_tokens.dart';
 
 /// Expressive animated button with motion feedback
 class AnimatedButton extends StatefulWidget {
