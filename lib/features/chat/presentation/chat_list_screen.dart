@@ -9,6 +9,7 @@ import 'package:hoppr_frontend/data/api/models/chat_dto.dart';
 import 'package:hoppr_frontend/features/auth/data/auth_provider.dart';
 import 'package:hoppr_frontend/shared/widgets/empty_state.dart';
 import 'package:hoppr_frontend/shared/widgets/skeleton_loader.dart';
+import 'package:hoppr_frontend/l10n/app_localizations.dart';
 
 /// Conversations provider
 final conversationsProvider = FutureProvider<List<ConversationDto>>((ref) {
@@ -23,25 +24,27 @@ class ChatListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authStateProvider);
     final conversationsAsync = ref.watch(conversationsProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     // Show login prompt if not authenticated
     if (!authState.isAuthenticated) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Chat'),
+          title: Text(l10n.chat),
           elevation: 0,
         ),
-        body: const EmptyState(
+        body: EmptyState(
           icon: Icons.chat_bubble_outline,
-          title: 'Sign in to chat',
-          message: 'Create an account to start conversations with ticket owners',
+          title: l10n.signInToChat,
+          message: l10n.createAccountToStartConversations,
+          showLoginActions: true,
         ),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chat'),
+        title: Text(l10n.chat),
         elevation: 0,
         actions: [
           IconButton(
@@ -56,9 +59,9 @@ class ChatListScreen extends ConsumerWidget {
       body: conversationsAsync.when(
         data: (conversations) {
           if (conversations.isEmpty) {
-            return const EmptyState(
+            return EmptyState(
               icon: Icons.chat_bubble_outline,
-              title: 'No conversations',
+              title: l10n.noConversations,
               message: 'Start a conversation from a ticket detail page',
             );
           }
@@ -88,11 +91,11 @@ class ChatListScreen extends ConsumerWidget {
         ),
         error: (error, stack) => EmptyState(
           icon: Icons.error_outline,
-          title: 'Error loading conversations',
+          title: l10n.errorLoadingConversations,
           message: error.toString(),
           action: ElevatedButton(
             onPressed: () => ref.invalidate(conversationsProvider),
-            child: const Text('Retry'),
+            child: Text(l10n.retry),
           ),
         ),
       ),

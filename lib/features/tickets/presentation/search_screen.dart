@@ -7,6 +7,7 @@ import 'package:hoppr_frontend/features/tickets/domain/ticket.dart';
 import 'package:hoppr_frontend/shared/widgets/empty_state.dart';
 import 'package:hoppr_frontend/shared/widgets/skeleton_loader.dart';
 import 'package:hoppr_frontend/shared/widgets/ticket_card.dart';
+import 'package:hoppr_frontend/l10n/app_localizations.dart';
 
 /// Search filters state
 class SearchFilters {
@@ -155,12 +156,13 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final filters = ref.watch(searchFiltersProvider);
     final ticketsAsync = ref.watch(searchTicketsProvider(_currentQuery));
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Search'),
+        title: Text(l10n.search),
         elevation: 0,
         actions: [
           IconButton(
@@ -194,7 +196,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             padding: const EdgeInsets.all(16),
             child: SearchBar(
               controller: _searchController,
-              hintText: 'Search tickets...',
+              hintText: l10n.searchTickets,
               onSubmitted: _performSearch,
               leading: const Icon(Icons.search),
               trailing: [
@@ -219,7 +221,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 children: [
                   if (filters.type != null)
                     Chip(
-                      label: Text('Type: ${filters.type}'),
+                      label: Text('${l10n.type}: ${filters.type}'),
                       onDeleted: () {
                         ref.read(searchFiltersProvider.notifier).state =
                             filters.copyWith(type: null);
@@ -228,7 +230,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     ),
                   if (filters.provider != null)
                     Chip(
-                      label: Text('Provider: ${filters.provider}'),
+                      label: Text('${l10n.providerLabel}: ${filters.provider}'),
                       onDeleted: () {
                         ref.read(searchFiltersProvider.notifier).state =
                             filters.copyWith(provider: null);
@@ -255,16 +257,16 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   _tickets = tickets;
                 }
                 if (tickets.isEmpty && _currentQuery == null) {
-                  return const EmptyState(
+                  return EmptyState(
                     icon: Icons.search,
-                    title: 'Start searching',
-                    message: 'Enter a search query to find tickets',
+                    title: l10n.startSearching,
+                    message: l10n.enterSearchQuery,
                   );
                 }
                 if (tickets.isEmpty) {
                   return EmptyState(
                     icon: Icons.search_off,
-                    title: 'No tickets found',
+                    title: l10n.noTicketsFound,
                     message: 'Try adjusting your search or filters',
                     action: ElevatedButton(
                       onPressed: () {
@@ -273,7 +275,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                         _searchController.clear();
                         _performSearch('');
                       },
-                      child: const Text('Clear filters'),
+                      child: Text(l10n.clearFilters),
                     ),
                   );
                 }
@@ -316,11 +318,11 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               ),
               error: (error, stack) => EmptyState(
                 icon: Icons.error_outline,
-                title: 'Error loading tickets',
+                title: l10n.errorLoadingTickets,
                 message: error.toString(),
                 action: ElevatedButton(
                   onPressed: () => ref.invalidate(searchTicketsProvider(_currentQuery)),
-                  child: const Text('Retry'),
+                  child: Text(l10n.retry),
                 ),
               ),
             ),
@@ -402,66 +404,81 @@ class _FilterBottomSheetState extends ConsumerState<_FilterBottomSheet> {
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Filters',
-                      style: theme.textTheme.headlineSmall,
+              Builder(
+                builder: (context) {
+                  final l10n = AppLocalizations.of(context)!;
+                  return Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Filters',
+                          style: theme.textTheme.headlineSmall,
+                        ),
+                        TextButton(
+                          onPressed: _clearFilters,
+                          child: Text(l10n.clearAll),
+                        ),
+                      ],
                     ),
-                    TextButton(
-                      onPressed: _clearFilters,
-                      child: const Text('Clear all'),
-                    ),
-                  ],
-                ),
+                  );
+                },
               ),
-              Expanded(
-                child: ListView(
-                  controller: scrollController,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  children: [
-                    TextField(
-                      controller: _typeController,
-                      decoration: const InputDecoration(
-                        labelText: 'Ticket Type',
-                        hintText: 'e.g., Monthly, Single, Day Pass',
-                        prefixIcon: Icon(Icons.category),
-                      ),
+              Builder(
+                builder: (context) {
+                  final l10n = AppLocalizations.of(context)!;
+                  return Expanded(
+                    child: ListView(
+                      controller: scrollController,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      children: [
+                        TextField(
+                          controller: _typeController,
+                          decoration: InputDecoration(
+                            labelText: l10n.ticketType,
+                            hintText: l10n.ticketTypeHint,
+                            prefixIcon: const Icon(Icons.category),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        TextField(
+                          controller: _providerController,
+                          decoration: InputDecoration(
+                            labelText: l10n.provider,
+                            hintText: l10n.providerHint,
+                            prefixIcon: const Icon(Icons.train),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        TextField(
+                          controller: _locationController,
+                          decoration: InputDecoration(
+                            labelText: l10n.location,
+                            hintText: l10n.locationHint,
+                            prefixIcon: const Icon(Icons.location_on),
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                      ],
                     ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: _providerController,
-                      decoration: const InputDecoration(
-                        labelText: 'Provider',
-                        hintText: 'e.g., DB, BVG, S-Bahn',
-                        prefixIcon: Icon(Icons.train),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: _locationController,
-                      decoration: const InputDecoration(
-                        labelText: 'Location',
-                        hintText: 'e.g., Berlin, Munich',
-                        prefixIcon: Icon(Icons.location_on),
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-                  ],
-                ),
+                  );
+                },
               ),
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _applyFilters,
-                    child: const Text('Apply Filters'),
-                  ),
-                ),
+              Builder(
+                builder: (context) {
+                  final l10n = AppLocalizations.of(context)!;
+                  return Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: _applyFilters,
+                        child: Text(l10n.applyFilters),
+                      ),
+                    ),
+                  );
+                },
               ),
             ],
           ),

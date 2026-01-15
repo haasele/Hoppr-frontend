@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:hoppr_frontend/core/theme/shape_tokens.dart';
 import 'package:hoppr_frontend/features/auth/data/auth_provider.dart';
+import 'package:hoppr_frontend/l10n/app_localizations.dart';
 
 class LoginModal extends ConsumerStatefulWidget {
   final VoidCallback? onDismiss;
@@ -19,6 +21,7 @@ class LoginModal extends ConsumerStatefulWidget {
 
 class _LoginModalState extends ConsumerState<LoginModal> {
   bool _isLoading = false;
+  bool _showRegister = false;
 
   Future<void> _handleLogin() async {
     setState(() {
@@ -31,17 +34,19 @@ class _LoginModalState extends ConsumerState<LoginModal> {
         widget.onLoginSuccess?.call();
         Navigator.of(context).pop();
       } else if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Login failed. Please try again.'),
+          SnackBar(
+            content: Text(l10n.loginFailed),
           ),
         );
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: ${e.toString()}'),
+            content: Text('${l10n.error}: ${e.toString()}'),
           ),
         );
       }
@@ -54,9 +59,41 @@ class _LoginModalState extends ConsumerState<LoginModal> {
     }
   }
 
+  Future<void> _handleRegister() async {
+    // Open Keycloak registration page
+    final registrationUrl = Uri.parse(
+      'http://localhost:8080/realms/ticket-platform/protocol/openid-connect/registrations?client_id=hoppr-frontend&redirect_uri=com.hoppr.app://login-callback&response_type=code',
+    );
+    
+    try {
+      if (await canLaunchUrl(registrationUrl)) {
+        await launchUrl(registrationUrl, mode: LaunchMode.externalApplication);
+      } else {
+        if (mounted) {
+          final l10n = AppLocalizations.of(context)!;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.couldNotOpenRegistrationPage),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${l10n.errorOpeningRegistration}: ${e.toString()}'),
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Dialog(
       shape: AppShapeTokens.dialogShape,
@@ -70,36 +107,51 @@ class _LoginModalState extends ConsumerState<LoginModal> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Login Required',
+                  _showRegister ? l10n.createAnAccount : l10n.loginRequired,
                   style: theme.textTheme.headlineSmall,
                 ),
                 IconButton(
                   icon: const Icon(Icons.close),
                   onPressed: widget.onDismiss ?? () => Navigator.of(context).pop(),
-                  tooltip: 'Close',
+                  tooltip: l10n.close,
                 ),
               ],
             ),
             const SizedBox(height: 16),
             Text(
-              'You need to be logged in to perform this action.',
+              _showRegister
+                  ? l10n.createAccountToManage
+                  : l10n.youNeedToBeLoggedIn,
               style: theme.textTheme.bodyMedium,
             ),
             const SizedBox(height: 24),
             ElevatedButton(
-              onPressed: _isLoading ? null : _handleLogin,
+              onPressed: _isLoading ? null : (_showRegister ? _handleRegister : _handleLogin),
               child: _isLoading
                   ? const SizedBox(
                       height: 20,
                       width: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Login with Keycloak'),
+                  : Text(_showRegister ? l10n.registerWithKeycloak : l10n.loginWithKeycloak),
             ),
             const SizedBox(height: 8),
-            TextButton(
-              onPressed: widget.onDismiss ?? () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      _showRegister = !_showRegister;
+                    });
+                  },
+                  child: Text(_showRegister ? l10n.alreadyHaveAccount : l10n.needAccount),
+                ),
+                TextButton(
+                  onPressed: widget.onDismiss ?? () => Navigator.of(context).pop(),
+                  child: Text(l10n.cancel),
+                ),
+              ],
             ),
           ],
         ),

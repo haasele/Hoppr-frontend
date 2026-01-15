@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hoppr_frontend/core/router/routes.dart';
+import 'package:hoppr_frontend/core/theme/locale_provider.dart';
 import 'package:hoppr_frontend/features/chat/presentation/chat_list_screen.dart';
 import 'package:hoppr_frontend/features/chat/presentation/chat_detail_screen.dart';
 import 'package:hoppr_frontend/features/profile/presentation/profile_screen.dart';
@@ -12,6 +13,9 @@ import 'package:hoppr_frontend/shared/widgets/bottom_nav_bar.dart';
 
 /// Router provider
 final routerProvider = Provider<GoRouter>((ref) {
+  // Watch locale to rebuild router when locale changes
+  ref.watch(localeProvider);
+  
   return GoRouter(
     initialLocation: AppRoutes.home,
     routes: [

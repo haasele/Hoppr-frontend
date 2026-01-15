@@ -7,6 +7,7 @@ import 'package:hoppr_frontend/data/api/models/chat_dto.dart';
 import 'package:hoppr_frontend/features/auth/data/auth_provider.dart';
 import 'package:hoppr_frontend/shared/widgets/empty_state.dart';
 import 'package:hoppr_frontend/shared/widgets/skeleton_loader.dart';
+import 'package:hoppr_frontend/l10n/app_localizations.dart';
 
 /// Messages provider
 final messagesProvider = FutureProvider.family<List<MessageDto>, String>((ref, conversationId) {
@@ -49,33 +50,34 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final authState = ref.watch(authStateProvider);
     final messagesAsync = ref.watch(messagesProvider(widget.chatId));
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chat ${widget.chatId.substring(0, 8)}'),
+        title: Text('${l10n.chat} ${widget.chatId.substring(0, 8)}'),
         elevation: 0,
         actions: [
           PopupMenuButton(
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'block',
                 child: Row(
                   children: [
-                    Icon(Icons.block, size: 20),
-                    SizedBox(width: 8),
-                    Text('Block user'),
+                    const Icon(Icons.block, size: 20),
+                    const SizedBox(width: 8),
+                    Text(l10n.blockUser),
                   ],
                 ),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'report',
                 child: Row(
                   children: [
-                    Icon(Icons.report, size: 20),
-                    SizedBox(width: 8),
-                    Text('Report user'),
+                    const Icon(Icons.report, size: 20),
+                    const SizedBox(width: 8),
+                    Text(l10n.reportUser),
                   ],
                 ),
               ),
@@ -93,9 +95,9 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
             child: messagesAsync.when(
               data: (messages) {
                 if (messages.isEmpty) {
-                  return const EmptyState(
+                  return EmptyState(
                     icon: Icons.chat_bubble_outline,
-                    title: 'No messages yet',
+                    title: l10n.noMessagesYet,
                     message: 'Start the conversation',
                   );
                 }
@@ -126,11 +128,11 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
               ),
               error: (error, stack) => EmptyState(
                 icon: Icons.error_outline,
-                title: 'Error loading messages',
+                title: l10n.errorLoadingMessages,
                 message: error.toString(),
                 action: ElevatedButton(
                   onPressed: () => ref.invalidate(messagesProvider(widget.chatId)),
-                  child: const Text('Retry'),
+                  child: Text(l10n.retry),
                 ),
               ),
             ),
@@ -156,7 +158,7 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
                       child: TextField(
                         controller: _messageController,
                         decoration: InputDecoration(
-                          hintText: 'Type a message...',
+                          hintText: l10n.typeAMessage,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(AppShapeTokens.extraLarge),
                           ),

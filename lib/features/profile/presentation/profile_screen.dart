@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hoppr_frontend/core/theme/shape_tokens.dart';
-import 'package:hoppr_frontend/core/theme/app_theme.dart';
 import 'package:hoppr_frontend/features/auth/data/auth_provider.dart';
+import 'package:hoppr_frontend/features/profile/presentation/settings_dialog.dart';
 import 'package:hoppr_frontend/features/tickets/data/ticket_repository.dart';
 import 'package:hoppr_frontend/features/tickets/domain/ticket.dart';
 import 'package:hoppr_frontend/shared/widgets/empty_state.dart';
@@ -187,12 +187,7 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   void _showSettings(BuildContext context, WidgetRef ref) {
-    showModalBottomSheet(
-      context: context,
-      shape: AppShapeTokens.bottomSheetShape,
-      isScrollControlled: true,
-      builder: (context) => _SettingsSheet(),
-    );
+    showSettingsDialog(context);
   }
 }
 
@@ -294,115 +289,8 @@ class _UnauthenticatedProfile extends StatelessWidget {
       icon: Icons.person_outline,
       title: 'Sign in to view profile',
       message: 'Create an account to manage your tickets and preferences',
+      showLoginActions: true,
     );
   }
 }
 
-class _SettingsSheet extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final themeMode = ref.watch(themeModeProvider);
-    final dynamicColorEnabled = ref.watch(dynamicColorEnabledProvider);
-
-    return DraggableScrollableSheet(
-      initialChildSize: 0.6,
-      minChildSize: 0.5,
-      maxChildSize: 0.9,
-      builder: (context, scrollController) {
-        return Container(
-          decoration: BoxDecoration(
-            color: theme.colorScheme.surface,
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(AppShapeTokens.extraLarge),
-            ),
-          ),
-          child: Column(
-            children: [
-              // Handle
-              Container(
-                margin: const EdgeInsets.only(top: 12),
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.onSurfaceVariant.withOpacity(0.4),
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text(
-                  'Settings',
-                  style: theme.textTheme.headlineSmall,
-                ),
-              ),
-              Expanded(
-                child: ListView(
-                  controller: scrollController,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  children: [
-                    // Theme mode
-                    Card(
-                      shape: AppShapeTokens.cardShape,
-                      child: ExpansionTile(
-                        leading: const Icon(Icons.palette),
-                        title: const Text('Theme'),
-                        children: [
-                          RadioListTile<ThemeMode>(
-                            title: const Text('System'),
-                            value: ThemeMode.system,
-                            groupValue: themeMode,
-                            onChanged: (value) {
-                              if (value != null) {
-                                ref.read(themeModeProvider.notifier).setThemeMode(value);
-                              }
-                            },
-                          ),
-                          RadioListTile<ThemeMode>(
-                            title: const Text('Light'),
-                            value: ThemeMode.light,
-                            groupValue: themeMode,
-                            onChanged: (value) {
-                              if (value != null) {
-                                ref.read(themeModeProvider.notifier).setThemeMode(value);
-                              }
-                            },
-                          ),
-                          RadioListTile<ThemeMode>(
-                            title: const Text('Dark'),
-                            value: ThemeMode.dark,
-                            groupValue: themeMode,
-                            onChanged: (value) {
-                              if (value != null) {
-                                ref.read(themeModeProvider.notifier).setThemeMode(value);
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    // Material You
-                    Card(
-                      shape: AppShapeTokens.cardShape,
-                      child: SwitchListTile(
-                        secondary: const Icon(Icons.color_lens),
-                        title: const Text('Material You Dynamic Colors'),
-                        subtitle: const Text('Use system accent colors'),
-                        value: dynamicColorEnabled,
-                        onChanged: (value) {
-                          ref.read(dynamicColorEnabledProvider.notifier)
-                              .setDynamicColorEnabled(value);
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-}

@@ -7,6 +7,7 @@ import 'package:hoppr_frontend/features/tickets/domain/ticket.dart';
 import 'package:hoppr_frontend/shared/widgets/empty_state.dart';
 import 'package:hoppr_frontend/shared/widgets/skeleton_loader.dart';
 import 'package:hoppr_frontend/shared/widgets/ticket_card.dart';
+import 'package:hoppr_frontend/l10n/app_localizations.dart';
 
 /// Wishlist provider
 final wishlistProvider = FutureProvider<List<Ticket>>((ref) {
@@ -22,33 +23,35 @@ class WishlistScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authStateProvider);
     final wishlistAsync = ref.watch(wishlistProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     // Show login prompt if not authenticated
     if (!authState.isAuthenticated) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Wishlist'),
+          title: Text(l10n.wishlist),
           elevation: 0,
         ),
-        body: const EmptyState(
+        body: EmptyState(
           icon: Icons.favorite_border,
-          title: 'Sign in to save tickets',
-          message: 'Create an account to save tickets to your wishlist',
+          title: l10n.signInToSaveTickets,
+          message: l10n.createAccountToSaveTickets,
+          showLoginActions: true,
         ),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Wishlist'),
+        title: Text(l10n.wishlist),
         elevation: 0,
       ),
       body: wishlistAsync.when(
         data: (tickets) {
           if (tickets.isEmpty) {
-            return const EmptyState(
+            return EmptyState(
               icon: Icons.favorite_border,
-              title: 'Your wishlist is empty',
+              title: l10n.yourWishlistIsEmpty,
               message: 'Save tickets you like to view them later',
             );
           }
@@ -74,7 +77,7 @@ class WishlistScreen extends ConsumerWidget {
                           backgroundColor: Colors.red,
                           foregroundColor: Colors.white,
                           icon: Icons.delete,
-                          label: 'Remove',
+                          label: l10n.remove,
                           borderRadius: BorderRadius.circular(AppShapeTokens.large),
                         ),
                       ],
@@ -98,11 +101,11 @@ class WishlistScreen extends ConsumerWidget {
         ),
         error: (error, stack) => EmptyState(
           icon: Icons.error_outline,
-          title: 'Error loading wishlist',
+          title: l10n.errorLoadingWishlist,
           message: error.toString(),
           action: ElevatedButton(
             onPressed: () => ref.invalidate(wishlistProvider),
-            child: const Text('Retry'),
+            child: Text(l10n.retry),
           ),
         ),
       ),
@@ -111,8 +114,9 @@ class WishlistScreen extends ConsumerWidget {
 
   void _removeFromWishlist(BuildContext context, WidgetRef ref, String ticketId) {
     // TODO: Implement remove from wishlist
+    final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Removed from wishlist')),
+      SnackBar(content: Text(l10n.removedFromWishlist)),
     );
     ref.invalidate(wishlistProvider);
   }

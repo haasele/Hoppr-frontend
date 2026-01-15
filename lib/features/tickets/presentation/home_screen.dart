@@ -5,9 +5,12 @@ import 'package:go_router/go_router.dart';
 import 'package:hoppr_frontend/core/router/routes.dart';
 import 'package:hoppr_frontend/features/tickets/data/ticket_repository.dart';
 import 'package:hoppr_frontend/features/tickets/domain/ticket.dart';
+import 'package:hoppr_frontend/features/auth/data/auth_provider.dart';
 import 'package:hoppr_frontend/shared/widgets/empty_state.dart';
+import 'package:hoppr_frontend/shared/widgets/login_banner.dart';
 import 'package:hoppr_frontend/shared/widgets/skeleton_loader.dart';
 import 'package:hoppr_frontend/shared/widgets/ticket_card.dart';
+import 'package:hoppr_frontend/l10n/app_localizations.dart';
 
 /// Home screen provider
 final homeTicketsProvider = FutureProvider<List<Ticket>>((ref) {
@@ -42,20 +45,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final ticketsAsync = ref.watch(homeTicketsProvider);
+    final authState = ref.watch(authStateProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Hoppr'),
+        title: Text(l10n.appTitle),
         elevation: 0,
       ),
       body: Column(
         children: [
+          // Login banner (only show if not authenticated)
+          if (!authState.isAuthenticated) const LoginBanner(),
           // Search bar
           Padding(
             padding: const EdgeInsets.all(16),
             child: SearchBar(
               controller: _searchController,
-              hintText: 'Search tickets...',
+              hintText: l10n.searchTickets,
               onSubmitted: _handleSearch,
               leading: const Icon(Icons.search),
               trailing: [
@@ -75,10 +82,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child: ticketsAsync.when(
               data: (tickets) {
                 if (tickets.isEmpty) {
-                  return const EmptyState(
+                  return EmptyState(
                     icon: Icons.search_off,
-                    title: 'No recent tickets',
-                    message: 'Start searching to see tickets here',
+                    title: l10n.noRecentTickets,
+                    message: l10n.startSearching,
                   );
                 }
                 return ListView.builder(
@@ -107,11 +114,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
               error: (error, stack) => EmptyState(
                 icon: Icons.error_outline,
-                title: 'Error loading tickets',
+                title: l10n.errorLoadingTickets,
                 message: error.toString(),
                 action: ElevatedButton(
                   onPressed: () => ref.invalidate(homeTicketsProvider),
-                  child: const Text('Retry'),
+                  child: Text(l10n.retry),
                 ),
               ),
             ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hoppr_frontend/core/theme/color_tokens.dart';
+import 'package:hoppr_frontend/core/theme/custom_color_provider.dart';
 import 'package:hoppr_frontend/core/theme/shape_tokens.dart';
 import 'package:hoppr_frontend/core/theme/text_theme.dart';
 
@@ -20,24 +21,39 @@ final dynamicColorEnabledProvider =
 final appThemeProvider = Provider<AppTheme>((ref) {
   final themeMode = ref.watch(themeModeProvider);
   final dynamicColorEnabled = ref.watch(dynamicColorEnabledProvider);
+  final customAccentColor = ref.watch(customAccentColorProvider);
 
   return AppTheme(
     themeMode: themeMode,
     dynamicColorEnabled: dynamicColorEnabled,
+    customAccentColor: customAccentColor,
   );
 });
 
 class AppTheme {
   final ThemeMode themeMode;
   final bool dynamicColorEnabled;
+  final Color? customAccentColor;
 
   AppTheme({
     required this.themeMode,
     required this.dynamicColorEnabled,
+    this.customAccentColor,
   });
 
+  /// Generate Material 3 ColorScheme from a single seed color
+  /// This generates the complete color scheme including backgrounds from one accent color
+  ColorScheme _generateColorSchemeFromSeed(Color seedColor, Brightness brightness) {
+    return ColorScheme.fromSeed(
+      seedColor: seedColor,
+      brightness: brightness,
+    );
+  }
+
   ThemeData get lightTheme {
-    final colorScheme = const ColorScheme.light(
+    final colorScheme = customAccentColor != null
+        ? _generateColorSchemeFromSeed(customAccentColor!, Brightness.light)
+        : const ColorScheme.light(
       primary: LightColorTokens.primary,
       onPrimary: LightColorTokens.onPrimary,
       primaryContainer: LightColorTokens.primaryContainer,
@@ -57,6 +73,10 @@ class AppTheme {
       surface: LightColorTokens.surface,
       onSurface: LightColorTokens.onSurface,
       surfaceContainerHighest: LightColorTokens.surfaceVariant,
+      surfaceContainerHigh: Color(0xFFEDE7F0),
+      surfaceContainer: Color(0xFFE7E0EC),
+      surfaceContainerLow: Color(0xFFE1DAE8),
+      surfaceContainerLowest: Color(0xFFFFFBFE),
       onSurfaceVariant: LightColorTokens.onSurfaceVariant,
       outline: LightColorTokens.outline,
       outlineVariant: LightColorTokens.outlineVariant,
@@ -73,8 +93,9 @@ class AppTheme {
       textTheme: AppTextTheme.lightTextTheme(colorScheme),
       cardTheme: CardThemeData(
         shape: AppShapeTokens.cardShape,
-        elevation: 1,
+        elevation: 0,
         margin: const EdgeInsets.all(8),
+        color: colorScheme.surfaceContainerHighest,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -82,7 +103,7 @@ class AppTheme {
             borderRadius: BorderRadius.circular(AppShapeTokens.extraLarge),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          elevation: 1,
+          elevation: 0,
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
@@ -119,9 +140,13 @@ class AppTheme {
       ),
       dialogTheme: DialogThemeData(
         shape: AppShapeTokens.dialogShape,
+        elevation: 0,
       ),
       appBarTheme: AppBarTheme(
         centerTitle: false,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
         shape: Border(
           bottom: BorderSide(
             color: colorScheme.outlineVariant,
@@ -132,7 +157,9 @@ class AppTheme {
   }
 
   ThemeData get darkTheme {
-    final colorScheme = const ColorScheme.dark(
+    final colorScheme = customAccentColor != null
+        ? _generateColorSchemeFromSeed(customAccentColor!, Brightness.dark)
+        : const ColorScheme.dark(
       primary: DarkColorTokens.primary,
       onPrimary: DarkColorTokens.onPrimary,
       primaryContainer: DarkColorTokens.primaryContainer,
@@ -152,6 +179,10 @@ class AppTheme {
       surface: DarkColorTokens.surface,
       onSurface: DarkColorTokens.onSurface,
       surfaceContainerHighest: DarkColorTokens.surfaceVariant,
+      surfaceContainerHigh: Color(0xFF3F3A47),
+      surfaceContainer: Color(0xFF49454F),
+      surfaceContainerLow: Color(0xFF53505A),
+      surfaceContainerLowest: Color(0xFF1C1B1F),
       onSurfaceVariant: DarkColorTokens.onSurfaceVariant,
       outline: DarkColorTokens.outline,
       outlineVariant: DarkColorTokens.outlineVariant,
@@ -178,7 +209,7 @@ class AppTheme {
             borderRadius: BorderRadius.circular(AppShapeTokens.extraLarge),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          elevation: 1,
+          elevation: 0,
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
@@ -215,9 +246,13 @@ class AppTheme {
       ),
       dialogTheme: DialogThemeData(
         shape: AppShapeTokens.dialogShape,
+        elevation: 0,
       ),
       appBarTheme: AppBarTheme(
         centerTitle: false,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
         shape: Border(
           bottom: BorderSide(
             color: colorScheme.outlineVariant,
